@@ -5,6 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "dev": "nodemon index.js",
     "start": "nodemon index.js"
   },
   "author": "",
@@ -13,7 +14,9 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",
     "@aws-sdk/client-sqs": "^3.758.0",
+    "aws-lambda": "^1.0.7",
     "dotenv": "^16.4.7",
+    
     "express": "^4.21.2",
     "nodemon": "^3.1.9"
   }
