@@ -1,6 +1,10 @@
 import { S3Client } from '@aws-sdk/client-s3';
-import { SQSClient, DeleteMessageCommand, ReceiveMessageCommand } from '@aws-sdk/client-sqs';
+import { SQSClient, ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 import { configDotenv } from 'dotenv';
+import { deleteMessageFromQueue } from './deleteMessage.js';
+import { deleteOriginalFileFromS3 } from './deleteOriginalFile.js';
+import {verifyContainerRes} from '../webhook/containerRes.js'
+
 
 configDotenv();
 
@@ -34,8 +38,8 @@ const verifyMessage = async () => {
                     const { Body, MessageId, ReceiptHandle } = message;
                     console.log('Body of message:', Body);
 
-                    if(!Body){
-                        console.log('no body available')
+                    if(!Body || !ReceiptHandle){
+                        console.log('no body and reciept handler available')
                         continue
                     }
                     // Validate event and parse it
@@ -62,14 +66,10 @@ const verifyMessage = async () => {
                     // Process the message (e.g., spin a container or take appropriate action)
 
                     // Delete the message after successful processing
-                    // const deleteCommand = new DeleteMessageCommand({
-                    //     QueueUrl: process.env.UPLOAD_QUEUE_URL,
-                    //     ReceiptHandle: ReceiptHandle,
-                    // });
-                    // await sqsClient.send(deleteCommand);
-                    // console.log(`Deleted message with ID: ${MessageId}`);
+                  
                 } catch (error) {
                     console.error('Error processing message:', error);
+                   await deleteMessageFromQueue(ReceiptHandle)
                 }
             }
         }
