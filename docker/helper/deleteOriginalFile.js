@@ -32,4 +32,3 @@ return {
 }
 }
 
-export { deleteOriginalFileFromS3}

@@ -1,4 +1,4 @@
-import { json } from "express";
+import { deleteOriginalFileFromS3} from '../../docker/helper/deleteOriginalFile.js'
 
 
 const verifyContainerRes = async(req , res)=>{
@@ -11,16 +11,11 @@ const verifyContainerRes = async(req , res)=>{
          
      }
  
-     if(success === true && status === 200){
-         return {
-             key , success,message
-         }
-     }else{
-         return {
-            status,
-            message
-         }
-     }
+   if(status === 200 && success === true){
+
+    await deleteOriginalFileFromS3(key)
+    
+   }
    } catch (error) {
     
     console.log('error in verifying container response',error)

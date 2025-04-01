@@ -5,8 +5,12 @@ import pLimit from "p-limit";
 import { configDotenv } from "dotenv";
 import path from "path";
 import axios from "axios";
+import { deleteOriginalFileFromS3 } from "./deleteOriginalFile.js";
+import { sendWebhookRequestToMainApp} from './sendWebHook.js'
 
 configDotenv();
+
+const originalFileKey = process.env.KEY
 
 // Determine content type
 export const getContentType = (filePath) => {
@@ -63,6 +67,8 @@ export const uploadFileOnS3 = async (filePath, signedUrl) => {
         if(response.status ===200){
             unlinkSync(filePath)
         }
+
+        return response
     } catch (error) {
         console.error(`Error uploading file ${filePath}:`, error);
     }
@@ -88,11 +94,32 @@ export const uploadAllHLSFilesParallel = async (outputFolder, s3Folder) => {
                 return;
             }
 
-            await uploadFileOnS3(localFilePath, signedUrl);
+           const response =  await uploadFileOnS3(localFilePath, signedUrl);
+
+           return response
+
         }));
 
-        await Promise.all(uploadPromises);
+       const solvedPromises =  await Promise.all(uploadPromises);
 
+       // if all status code 200 send seccess webhook req to main application
+
+      if(solvedPromises.length >0){
+       const allSuccessfulResult = solvedPromises.every((promise)=> promise.status === 200)
+
+       if(allSuccessfulResult === true){
+
+      // send webhook req to main application for transcoding update
+
+      const response = await sendWebhookRequestToMainApp(`${s3Folder}/playlist.m3u8`,200)
+      await deleteOriginalFileFromS3(originalFileKey)
+       } else{
+
+       const response = await sendWebhookRequestToMainApp(`${s3Folder}/playlist.m3u8`,403)
+       
+    }
+
+      }
      
         rmSync(outputFolder,{
             recursive:true,

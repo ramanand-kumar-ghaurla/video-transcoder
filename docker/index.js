@@ -20,32 +20,42 @@ import { promisify } from 'node:util'
 configDotenv()
 
 const s3client = new S3Client({
+    requestHandler:{requestTimeout:600000},
    region: process.env.AWS_REGION,
     credentials: {
         accessKeyId:process.env.AWS_ACCESS_KEY ,
-        secretAccessKey: process.env.AWS_SECRET_KEY}
+        secretAccessKey: process.env.AWS_SECRET_KEY},
+    
 })
 
 const transcodeVideo = async ()=>{
     try {
 
          const key = process.env.KEY
-        //get the file from s3
-        const getcommand = new GetObjectCommand({
-            Bucket: process.env.ORIGINAL_BUCKET_NAME,
-            Key: key,
-             })
+         let result
+         let originalFilePath
 
-        const result = await s3client.send(getcommand)  
-        
-      
-        //download file locally 
-
-        const originalFilePath = 'video.mp4';
-    const writeStream = createWriteStream(originalFilePath);
-    await pipeline(result.Body, writeStream);
-
-    
+         console.log('key of original file',key)
+       try {
+         //get the file from s3
+         const getcommand = new GetObjectCommand({
+             Bucket: process.env.ORIGINAL_BUCKET_NAME,
+             Key: key,
+              })
+ 
+          result = await s3client.send(getcommand)  
+         
+       
+         //download file locally 
+ 
+          originalFilePath = 'video.mp4';
+     const writeStream = createWriteStream(originalFilePath);
+     await pipeline(result.Body, writeStream);
+ 
+     
+       } catch (error) {
+        console.log('error in getting object from s3',error)
+       }
 
     // Prepare output directory
     const outputSuffix = key.split('.')[0];

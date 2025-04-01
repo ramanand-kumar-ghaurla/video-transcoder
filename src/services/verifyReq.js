@@ -2,7 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { SQSClient, ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 import { configDotenv } from 'dotenv';
 import { deleteMessageFromQueue } from './deleteMessage.js';
-import { deleteOriginalFileFromS3 } from './deleteOriginalFile.js';
+import { deleteOriginalFileFromS3 } from '../../docker/helper/deleteOriginalFile.js';
 import {verifyContainerRes} from '../webhook/containerRes.js'
 
 
