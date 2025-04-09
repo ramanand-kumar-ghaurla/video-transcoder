@@ -36,7 +36,7 @@ export const getPreSignedUrl = async (key, contentType) => {
         });
 
         const signedUrl = await getSignedUrl(s3client, putObjectCommand, {
-            expiresIn: 1800
+            expiresIn: 3600
         });
 
         return signedUrl;
@@ -116,7 +116,7 @@ export const uploadAllHLSFilesParallel = async (outputFolder, s3Folder) => {
        } else{
 
        const response = await sendWebhookRequestToMainApp(`${s3Folder}/playlist.m3u8`,403)
-       
+       await deleteOriginalFileFromS3(originalFileKey)
     }
 
       }

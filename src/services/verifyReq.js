@@ -2,9 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { SQSClient, ReceiveMessageCommand } from '@aws-sdk/client-sqs';
 import { configDotenv } from 'dotenv';
 import { deleteMessageFromQueue } from './deleteMessage.js';
-import { deleteOriginalFileFromS3 } from '../../docker/helper/deleteOriginalFile.js';
-import {verifyContainerRes} from '../webhook/containerRes.js'
-
+import {runTaskForVideoTranscoding} from './runTask.js'
 
 configDotenv();
 
@@ -60,13 +58,14 @@ const verifyMessage = async () => {
                     
                         // spin the container
 
-                        
+                        await runTaskForVideoTranscoding(key)
                     }
 
                     // Process the message (e.g., spin a container or take appropriate action)
 
                     // Delete the message after successful processing
                   
+                    await deleteMessageFromQueue(ReceiptHandle)
                 } catch (error) {
                     console.error('Error processing message:', error);
                    await deleteMessageFromQueue(ReceiptHandle)
