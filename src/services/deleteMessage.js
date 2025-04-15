@@ -6,7 +6,7 @@ configDotenv()
 const deleteMessageFromQueue = async(recieptHandler)=>{
 
   try {
-      if(!queueURL || !recieptHandler){
+      if(!recieptHandler){
           throw new Error("queue url and reciept handler is required to delete message");
           
       }
@@ -24,11 +24,11 @@ const deleteMessageFromQueue = async(recieptHandler)=>{
           ReceiptHandle: recieptHandler,
       });
       await sqsClient.send(deleteCommand);
-      console.log(`Deleted message with ID: ${MessageId}`);
+      console.log(`Deleted message successfully`);
 
       
   } catch (error) {
-    
+    console.log('error in deleting message of sqs',error)
     throw new Error("error in deleting message from queue");
     
   }

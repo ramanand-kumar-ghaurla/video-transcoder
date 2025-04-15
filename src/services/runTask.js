@@ -26,7 +26,7 @@ export const runTaskForVideoTranscoding = async(key)=>{
                      'subnet-01d30d9dc004250a1',
                      'subnet-0c024f91b0910c3a2'
                  ],
-                 securityGroups:'sg-0c4287ab0877ca993',
+                 securityGroups:['sg-0c4287ab0877ca993'],
                  assignPublicIp:'ENABLED'
              },
              
@@ -35,7 +35,13 @@ export const runTaskForVideoTranscoding = async(key)=>{
              containerOverrides:[
                  { name :process.env.AWS_CONTAINER_NAME,
                    environment:[
-                     { name: 'KEY' , value: key,}
+                     { name: 'KEY' , value: key,},
+                     { name: 'ORIGINAL_BUCKET_NAME' , value: process.env.ORIGINAL_BUCKET_NAME},
+                     { name: 'AWS_ACCESS_KEY' , value: process.env.AWS_ACCESS_KEY,},
+                     { name: 'AWS_SECRET_KEY' , value:  process.env.AWS_SECRET_KEY},
+                     { name: 'AWS_REGION' , value:  process.env.AWS_REGION},
+                     { name: 'TRANSCODED_BUCKET_NAME' , value: process.env.TRANSCODED_BUCKET_NAME},
+                     { name: 'MAIN_APPLICATION_URL' , value:process.env.MAIN_APPLICATION_URL},
                    ]
                  }
              ]

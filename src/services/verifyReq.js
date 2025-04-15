@@ -58,7 +58,7 @@ const verifyMessage = async () => {
                     
                         // spin the container
 
-                        await runTaskForVideoTranscoding(key)
+                       const {} = await runTaskForVideoTranscoding(key)
                     }
 
                     // Process the message (e.g., spin a container or take appropriate action)
@@ -68,7 +68,7 @@ const verifyMessage = async () => {
                     await deleteMessageFromQueue(ReceiptHandle)
                 } catch (error) {
                     console.error('Error processing message:', error);
-                   await deleteMessageFromQueue(ReceiptHandle)
+                  //  await deleteMessageFromQueue(ReceiptHandle)
                 }
             }
         }

@@ -79,7 +79,7 @@ export const uploadAllHLSFilesParallel = async (outputFolder, s3Folder) => {
     try {
         const files = readdirSync(outputFolder, { withFileTypes: true });
 
-        console.log("Files to upload:", files.map(f => f.name));
+        
 
         const limit = pLimit(5); // ✅ FIXED: Correctly apply concurrency limit
 
@@ -113,6 +113,7 @@ export const uploadAllHLSFilesParallel = async (outputFolder, s3Folder) => {
 
       const response = await sendWebhookRequestToMainApp(`${s3Folder}/playlist.m3u8`,200)
       await deleteOriginalFileFromS3(originalFileKey)
+      
        } else{
 
        const response = await sendWebhookRequestToMainApp(`${s3Folder}/playlist.m3u8`,403)
